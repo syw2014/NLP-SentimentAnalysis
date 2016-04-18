@@ -1,0 +1,6 @@
+# Compile commonds:
+#  use singleton.h
+    g++ t_segmentWapper.cc -o t_segmentWapper -I ../include/ -I /work/SF1R_Proj/hobby/hearse/cppjieba/include -I /work/SF1R_Proj/hobby/hearse/cppjieba/deps -lboost_system -lboost_filesystem /work/SF1R_Proj/hobby/zeus/comment-rating/include/pattern/singleton.cpp
+    
+# use singleton.hpp
+    g++ t_segmentWapper.cc -o t_segmentWapper -I ../include/ -I /work/SF1R_Proj/hobby/hearse/cppjieba/include -I /work/SF1R_Proj/hobby/hearse/cppjieba/deps -lboost_system -lboost_filesystem
