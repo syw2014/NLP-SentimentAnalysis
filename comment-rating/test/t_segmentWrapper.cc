@@ -5,7 +5,7 @@
  @ Mail: jerryshi0110@gmail.com
  @ Created Time: Fri 15 Apr 2016 06:01:19 PM CST
  ************************************************************************/
-#include "nlp/segmentWapper.h"
+#include "nlp/segmentWrapper.h"
 #include <ctime>
 
 int main(int argc, char* argv[])
@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
     end = clock();
     std::cout << "Loaded resources time: " << (double)(end - start)/CLOCKS_PER_SEC << "s.\n";
     
-    std::string str = "【全球购】 德国原装 爱他美奶粉白金版奶粉 800g pre段 1段 一段 2段(6个月以上)";
+    std::string str = "【全球购】德国原装爱他美奶粉白金版奶粉800gpre段1段一段2段(6个月以上)";
     std::vector<std::string> vec;
     
     start = clock();

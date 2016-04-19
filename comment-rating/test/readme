@@ -4,3 +4,6 @@
     
 # use singleton.hpp
     g++ t_segmentWapper.cc -o t_segmentWapper -I ../include/ -I /work/SF1R_Proj/hobby/hearse/cppjieba/include -I /work/SF1R_Proj/hobby/hearse/cppjieba/deps -lboost_system -lboost_filesystem
+
+# t_genFeature.cc
+    g++ t_genFeature.cc -o t_genFeature -I ../include/ -I /work/SF1R_Proj/hobby/hearse/cppjieba/include -I /work/SF1R_Proj/hobby/hearse/cppjieba/deps -lboost_system -lboost_filesystem
