@@ -10,8 +10,8 @@
 
 int main(int argc, char* argv[])
 {
-    std::string sampleDir = "../samples";
-    std::string dictDir = "../../dict";
+    std::string sampleDir = "../../samples";
+    std::string dictDir = "../../../dict";
     Zeus::nlp::GenFeature* gen = NULL;
 
     gen = new Zeus::nlp::GenFeature(dictDir, sampleDir);

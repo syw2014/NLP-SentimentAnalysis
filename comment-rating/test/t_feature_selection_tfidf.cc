@@ -6,16 +6,16 @@
  @ Created Time: Wed 20 Apr 2016 01:19:02 PM CST
  ************************************************************************/
 #include <iostream>
-#include "feature/selection/tf_idf.h"
+#include "feature/selection/selection.h"
 
 int main(int argc, char* argv[])
 {
-   float r = Zeus::TFIDF::caculateTFIDF<int, float>(1,1,1,1);
+   float r = Zeus::FeatureSelect::caculateTFIDF<int, float>(1,1,1,1);
    std::cout << "TF_IDF: " << r << std::endl;
 
    std::cout << "Test : Ascending sort \n";
    
-   std::vector<Zeus::SORT<std::string, int>::VectorPair> vec;
+   std::vector<Zeus::SORT<std::string, float>::VectorPair> vec;
    vec.push_back(std::make_pair("a", 8));
    vec.push_back(std::make_pair("a", 9));
    vec.push_back(std::make_pair("a", 0));

@@ -1,6 +1,8 @@
+*.swp
 dict/
 t_segmentWapper
 comment-rating/samples/samples*
 comment-rating/samples/vocab*
 comment-rating/test/t_feature_selection_tfidf
 comment-rating/test/bin/
+comment-rating/samples/feature*

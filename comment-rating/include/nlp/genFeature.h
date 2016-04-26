@@ -18,7 +18,7 @@
 #include <boost/algorithm/string/classification.hpp>
 
 #include "segmentWrapper.h"
-
+#include "feature/selection/selection.h"
 
 
 namespace Zeus
@@ -35,7 +35,7 @@ typedef boost::unordered_map<std::string, TF_DFType> VocabType;
 
 // Feature type
 // Structure: term, score/weight
-typedef std::vector<std::pair<std::string, float> > FeatureType;
+typedef std::vector<Zeus::SORT<std::string, float>::VectorPair > FeatureType;
 
 enum{negitive=0,positive};
 
@@ -46,12 +46,20 @@ class GenFeature
 
         std::string dictDir_;
         std::string sampleDir_;
+        
+        // total document number
+        uint32_t posDocCnt_;
+        uint32_t negDocCnt_;
 
         // Store all the term wiht tf and df
         VocabType posVocab_;
         VocabType negVocab_;
         VocabType medVocab_;
         
+        // term-score dictionary
+        boost::unordered_map<std::string, float> posTermScore_;
+        boost::unordered_map<std::string, float> negTermScore_;
+
         // Stop words
         boost::unordered_set<std::string> stopwords_;
 
@@ -68,15 +76,18 @@ class GenFeature
 
             return nline;
         }
-
-        void segment_(const std::string& line, std::vector<std::string>& token){
+        
+        // dedup: if it's true means you want to remove the same words in line.
+        void segment_(const std::string& line, std::vector<std::string>& token, bool dedup=true){
             token.clear();
             std::string nstr = normalize_(line);
-            std::vector<std::string> vec;
-            Zeus::nlp::SegmentWrapper::get()->segment(nstr, vec);
-            std::set<std::string> set_(vec.begin(), vec.end());
-            
-            std::copy(set_.begin(), set_.end(), std::back_inserter(token));
+            Zeus::nlp::SegmentWrapper::get()->segment(nstr, token);
+            if(dedup){
+                // Remove duplication
+                std::set<std::string> set_(token.begin(), token.end());
+                token.clear();
+                std::copy(set_.begin(), set_.end(), std::back_inserter(token));
+            }
         }
 
         void removeStopWords_(std::vector<std::string>& vec){
@@ -156,7 +167,7 @@ class GenFeature
     
     public:
         GenFeature(const std::string& dir, const std::string& sampleDir)
-          :dictDir_(dir),sampleDir_(sampleDir)
+          :dictDir_(dir),sampleDir_(sampleDir),posDocCnt_(0),negDocCnt_(0)
         {
             if(!Zeus::nlp::SegmentWrapper::get()->loadDictFiles(dictDir_)){
                 std::cout << "Resources load failed, resources path : " << dictDir_ << std::endl;
@@ -174,8 +185,9 @@ class GenFeature
         }
 
         // Get all words and it's information tf, df
-        void getWordsInfo(const std::string& filename, VocabType& vocab){
+        void getWordsInfo(const std::string& filename, VocabType& vocab,uint32_t& lineCount){
             vocab.clear();
+            lineCount = 0;
             if(filename.empty()){
                 std::cout << "File " << filename << "is not exists!\n";
                 return;
@@ -193,6 +205,7 @@ class GenFeature
                 std::string content = line.substr(pos+1);
                 segment_(content, token);
                 insertToVocab(token, vocab);
+                lineCount += 1;
             }
             ifs.close();
         }
@@ -214,7 +227,7 @@ class GenFeature
 
         void genPosVocab(const std::string& filename){
             std::cout << "[Info] Start positive vocabulary generation...\n";
-            getWordsInfo(filename, posVocab_);
+            getWordsInfo(filename, posVocab_, posDocCnt_);
             std::cout << "\tOriginal Positive Vocabulary size : " << posVocab_.size() << std::endl;
             // clear stop words
             VocabType::iterator it;
@@ -224,13 +237,14 @@ class GenFeature
                 else
                     ++it;
             }
-            std::cout << "\tAfter removing stop words Positive Vocabulary size : " << posVocab_.size() << std::endl;
+            std::cout << "\tAfter removing stop words Positive Vocabulary size : " << posVocab_.size() 
+                      << "\tTotal documnet number: " << posDocCnt_ <<std::endl;
             std::cout << "[Info] Positive vocabulary generation completed!\n";
         }
 
         void genNegVocab(const std::string& filename){
             std::cout << "[Info] Start negative vocabulary generation...\n";
-            getWordsInfo(filename, negVocab_);
+            getWordsInfo(filename, negVocab_, negDocCnt_);
             std::cout << "\tOriginal Positive Vocabulary size : " << negVocab_.size() << std::endl;
             // clear stop words
             VocabType::iterator it;
@@ -240,29 +254,119 @@ class GenFeature
                 else
                     ++it;
             }
-            std::cout << "\tAfter removing stop words Positive Vocabulary size : " << negVocab_.size() << std::endl;
+            std::cout << "\tAfter removing stop words Positive Vocabulary size : " << negVocab_.size() 
+                        << "\tTotal document number: " << negDocCnt_ << std::endl;
             std::cout << "[Info] Negative vocabulary generation completed!\n";
         }
         
         void genVocab(){
             genPosVocab(sampleDir_+"/samples.pos");
             genNegVocab(sampleDir_+"/samples.neg");
+            featureSelection();
             flush();
+        }
+        
+        // To caculate chi-square test value and select features
+        // TODO: optimization
+        void featureSelection(){
+            VocabType::iterator it,fit;
+            posFeatureVec_.resize(posVocab_.size());
+            negFeatureVec_.resize(negVocab_.size());
+            boost::unordered_map<std::string, uint32_t> dfInPos;
+
+            // Negative
+            uint32_t i;
+            for(i=0,it=negVocab_.begin(); it != negVocab_.end(); ++it, ++i){
+                uint32_t A, B, C, D;
+                // Assign values for A,B,C,D
+                A = it->second.second;
+                fit = posVocab_.find(it->first);
+                if(fit != posVocab_.end()){
+                    B = fit->second.second;
+                    dfInPos[it->first] = A;
+                } else {
+                    B = 0;
+                }
+                C = log(negDocCnt_+1) - A;
+                D = log(posDocCnt_+1) - B;
+                
+                // CHi-Square
+                float r = Zeus::FeatureSelect::CHiSquare<uint32_t, float>(A, B, C, D);
+                negFeatureVec_[i] = std::make_pair(it->first, r);
+                // TF-IDF
+                float w = Zeus::FeatureSelect::TFIDF<uint32_t, float>(it->second.first, negDocCnt_);
+                negTermScore_[it->first] = w;
+            }
+            // Positive
+            boost::unordered_map<std::string, uint32_t>::iterator pit;
+            for(i=0,it=posVocab_.begin(); it != posVocab_.end(); ++it, ++i){
+                uint32_t A, B, C, D;
+                // Assign values for A, B, C, D
+                A = it->second.second;
+                pit = dfInPos.find(it->first);
+                if(pit != dfInPos.end())
+                    B = pit->second;
+                else
+                    B = 0;
+                C = log(posDocCnt_+1) - A;
+                D = log(negDocCnt_+1) - B;
+                
+                // CHi-Square
+                float r = Zeus::FeatureSelect::CHiSquare<uint32_t, float>(A, B, C, D);
+                posFeatureVec_[i] = std::make_pair(it->first, r);
+                // TF-IDF
+                float w = Zeus::FeatureSelect::TFIDF<uint32_t, float>(it->second.first, posDocCnt_);
+                posTermScore_[it->first] = w;
+            }
+
+            // Sort
+            std::sort(negFeatureVec_.begin(), negFeatureVec_.end(), Zeus::SORT<std::string, float>::sortDescendBySecond);
+            std::sort(posFeatureVec_.begin(), posFeatureVec_.end(), Zeus::SORT<std::string, float>::sortDescendBySecond);
+        }
+
+        void genFeatures(){
+            VocabType::iterator it;
+            posFeatureVec_.resize(posVocab_.size());
+            negFeatureVec_.resize(negVocab_.size());
+            uint32_t i;
+            for(i=0,it = posVocab_.begin(); it != posVocab_.end(); ++it,++i){
+                float w = Zeus::FeatureSelect::TFIDF<uint32_t, float>(it->second.first, /*it->second.second,*/ posDocCnt_ /*, posVocab_.size()*/);
+                posFeatureVec_[i] = std::make_pair(it->first, w);
+            }
+            
+            std::sort(posFeatureVec_.begin(), posFeatureVec_.end(), Zeus::SORT<std::string, float>::sortDescendBySecond);
+
+            for(i=0,it = negVocab_.begin(); it != posVocab_.end(); ++it,++i){
+                float w = Zeus::FeatureSelect::TFIDF<uint32_t, float>(it->second.first, /*it->second.second,*/ negDocCnt_ /*, posVocab_.size()*/);
+                negFeatureVec_[i] = std::make_pair(it->first, w);
+            }
+            std::sort(negFeatureVec_.begin(), negFeatureVec_.end(), Zeus::SORT<std::string, float>::sortDescendBySecond);
         }
 
         // TODO: serialization
         void flush(){
-            std::ofstream ofs((sampleDir_+"/vocab.pos").c_str());
-            VocabType::iterator it;
-            for(it = posVocab_.begin(); it != posVocab_.end(); ++it){
-                ofs << it->first << "," << it->second.first << "," << it->second.second << std::endl;
+            std::ofstream ofs((sampleDir_+"/feature.pos").c_str());
+            float w;
+            boost::unordered_map<std::string, float>::iterator it;
+            for(uint32_t i = 0; i < posFeatureVec_.size(); ++i){
+                it = posTermScore_.find(posFeatureVec_[i].first);
+                if(it == posTermScore_.end())
+                    w = 0.0;
+                else 
+                    w = it->second;
+                ofs << posFeatureVec_[i].first << "," << posFeatureVec_[i].second << "," << w << std::endl;
             }
             ofs.clear();
             ofs.close();
 
-            ofs.open((sampleDir_+"/vocab.neg").c_str());
-            for(it = negVocab_.begin(); it != negVocab_.end(); ++it){
-                ofs << it->first << "," << it->second.first << "," << it->second.second << std::endl;
+            ofs.open((sampleDir_+"/feature.neg").c_str());
+            for(uint32_t i = 0; i < negFeatureVec_.size(); ++i){
+                it = negTermScore_.find(negFeatureVec_[i].first);
+                if(it == negTermScore_.end())
+                    w = 0.0;
+                else
+                    w = it->second;
+                ofs << negFeatureVec_[i].first << "," << negFeatureVec_[i].second << "," << w << std::endl;
             }
             ofs.clear();
             ofs.close();
