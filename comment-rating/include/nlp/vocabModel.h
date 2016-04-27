@@ -89,19 +89,6 @@ class VocabModel
 
             return nline;
         }
-        
-        // dedup: if it's true means you want to remove the same words in line.
-        void segment_(const std::string& line, std::vector<std::string>& token, bool dedup=true){
-            token.clear();
-            std::string nstr = normalize_(line);
-            Zeus::nlp::SegmentWrapper::get()->segment(nstr, token);
-            if(dedup){
-                // Remove duplication
-                std::set<std::string> set_(token.begin(), token.end());
-                token.clear();
-                std::copy(set_.begin(), set_.end(), std::back_inserter(token));
-            }
-        }
 
         // Remove stop words from token
         void removeStopWords_(std::vector<std::string>& vec){
@@ -211,6 +198,18 @@ class VocabModel
         {
         }
 
+        // dedup: if it's true means you want to remove the same words in line.
+        void segment(const std::string& line, std::vector<std::string>& token, bool dedup=true){
+            token.clear();
+            std::string nstr = normalize_(line);
+            Zeus::nlp::SegmentWrapper::get()->segment(nstr, token);
+            if(dedup){
+                // Remove duplication
+                std::set<std::string> set_(token.begin(), token.end());
+                token.clear();
+                std::copy(set_.begin(), set_.end(), std::back_inserter(token));
+            }
+        }
         // To extend token terms based on bigram
         // before extension: t1,t2,t3 
         // after extension: t1,t2,t3,t1_t2,t2_t3
@@ -254,7 +253,7 @@ class VocabModel
                     continue;
                 std::string label = line.substr(0,pos);
                 std::string content = line.substr(pos+1);
-                segment_(content, token);
+                segment(content, token);
                 bigramModel(token);
                 insertToVocab(token, vocab, label);
                 lineCount += 1;
@@ -303,7 +302,17 @@ class VocabModel
             featureSelection();
             flush();
         }
-        
+       
+        // Select TopK feaures
+        void getFeatures(const std::string& sampleDir, std::vector<FeatureType>& featVec,const std::size_t TopK=1000){
+            genPosVocab(sampleDir+"/samples.pos");
+            genPosVocab(sampleDir+"/samples.neg");
+            termsClean_();
+            featureSelection();
+            std::vector<FeatureType> vec(feature_.begin(), featureVec_.begin()+TopK);
+            featVec.swap(vec);
+        }
+
         // To caculate chi-square test value and select features
         // TODO: optimization
         void featureSelection(){
@@ -341,7 +350,15 @@ class VocabModel
             }
             ofs.clear();
             ofs.close();
-        }        
+        }       
+        
+        // Clear all occupy memory
+        void clear(){
+            std::vector<FeatureType> tmp;
+            featureVec_.swap(tmp);
+            termScore_.clear();
+            vocab_.clear();
+        }
 };
 
 
