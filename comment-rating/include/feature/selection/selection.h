@@ -5,7 +5,7 @@
  @ Mail: jerryshi0110@gmail.com
  @ Created Time: Wed 20 Apr 2016 10:36:21 AM CST
  ************************************************************************/
-/*    This headers contains the most useful feature selection model/methods
+/* This headers contains the most useful feature selection model/methods
  * like:
  * TFIDF,CHI-Square, Entropy, etc.
  * */
@@ -82,7 +82,7 @@ namespace Zeus
                -----------------------CHISquare----------------------------*/
             template<typename T, typename R>
             inline static R CHiSquare(const T& A, const T& B, const T& C, const T& D){
-                R r = (R)(A*D - B*C)*(A*D - B*C) / (A + B + 1)*(C + D + 1);
+                R r = (R)((A*D - B*C) / ((A + B + 1)*(C + D + 1)));
                 return r;
             }
             

@@ -25,7 +25,7 @@ namespace Zeus
 namespace nlp
 {
     // Tokenize Class
-    class cppjieba::Jieba;
+   // class cppjieba::Jieba;
 
     class SegmentWrapper
     {
