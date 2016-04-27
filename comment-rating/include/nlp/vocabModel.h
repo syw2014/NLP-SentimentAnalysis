@@ -5,6 +5,19 @@
  @ Mail: jerryshi0110@gmail.com
  @ Created Time: Fri 15 Apr 2016 10:49:33 AM CST
  ************************************************************************/
+/* 
+ * Vocabulary model to generate avaiable features from given samples for
+ * text classification, and in this module we used both feature selection
+ * (TF-IDF,CHI-Square,Entropy) and extraction methods(Topic modeling, PLSA,
+ * LDA), we given all the implementations of them but we only chose one to
+ * generate features, and the default is TF-IDF you can find  other methods
+ * in 'include/feature/', you can try it 'featureSelection()', but in the 
+ * first version the performance may be need optimizated,wish you happy to
+ * use it.
+ *
+*/
+
+
 #ifndef ZEUS_NLP_VOCABMODEL_H
 #define ZEUS_NLP_VOCABMODEL_H
 
@@ -36,10 +49,10 @@ typedef struct
 
 
 
-// Vocabulary type
+// Golbel Vocabulary type
 typedef boost::unordered_map<std::string, TermInfoType> VocabType;
 
-// Feature type
+// Golbel Feature type
 // Structure: term, score/weight
 typedef std::vector<Zeus::SORT<std::string, float>::VectorPair > FeatureType;
 
@@ -67,7 +80,6 @@ class VocabModel
         // Stop words
         boost::unordered_set<std::string> stopwords_;
 
-
         // Normalization, to lower case, remove white space at head and tail 
         std::string normalize_(const std::string& line){
             std::string nline(line);
@@ -91,6 +103,7 @@ class VocabModel
             }
         }
 
+        // Remove stop words from token
         void removeStopWords_(std::vector<std::string>& vec){
             std::vector<std::string>::iterator it;
             for(it = vec.begin(); it != vec.end(); ++it){
@@ -100,7 +113,7 @@ class VocabModel
                 }
             }
         }
-
+        
         bool loadStopWords_(const std::string& filename){
             if(filename.empty())
                 return false;
@@ -146,13 +159,13 @@ class VocabModel
             return true;
         }
 
-        // Check term is need to be cleaned or not
-        // clean rules: > digit, "123"
-        //              > alphanumeric, "cz1234"
-        //              > alphabet, "cwhk"
-        //              > single word, "吃"
-        //              > digit with dot, "123.45"
-        //              > term is too long , specific length = 10 * 3 (10 word)
+        // Check term is need to be cleaned or not, rules:
+        //  1)digit, "123"
+        //  2)alphanumeric, "cz1234"
+        //  3)alphabet, "cwhk"
+        //  4)single word, "吃"
+        //  5)digit with dot, "123.45"
+        //  6)term is too long , specific length = 10 * 3 (10 word)
         bool isNeedClean_(const std::string& term){
             if(term.empty())
                 return true;
@@ -204,8 +217,7 @@ class VocabModel
         void bigramModel(std::vector<std::string>& token){
             std::vector<std::string> tmp(token);
             token.clear();
-            std::size_t size = tmp.size();
-            std::size_t i, j;
+            std::size_t i, j, size = tmp.size();
             std::string bigram;
             for(i = 0; i < size; ++i){
                 // clean
@@ -250,7 +262,7 @@ class VocabModel
             ifs.close();
         }
         
-        // Insert word information into vocabulary
+        // Insert word information into global vocabulary
         void insertToVocab(const std::vector<std::string>& vec, VocabType& vocab, const std::string& label){
             VocabType::iterator it;
             for(std::size_t i = 0; i < vec.size(); ++i){ 
@@ -274,14 +286,12 @@ class VocabModel
 
         void genPosVocab(const std::string& filename){
             std::cout << "[Info] Start vocabulary generation from \"" << filename << "\" ...\n";
-            
             getWordsInfo(filename, vocab_, posDocCnt_);
             std::cout << "[Info]  Vocabulary generation completed.\n";
         }
         
         void genNegVocab(const std::string& filename){
             std::cout << "[Info] Start vocabulary generation from \"" << filename << "\" ...\n";
-            
             getWordsInfo(filename, vocab_, negDocCnt_);
             std::cout << "[Info] Vocabulary generation completed.\n";
         }
