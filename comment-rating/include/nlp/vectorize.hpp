@@ -22,38 +22,51 @@ class Vectorize
         std::string sampleDir_;
         std::string dictDir_;
 
-        Zeus::nlp::VocabModel* vocab_;
+        Zeus::nlp::VocabModel* vocabModel_;
         Zeus::nlp::FeatureType featureVec_;
-    
+        
     public:
         Vectorize(const std::string& sampleDir, const std::string& dictDir)
-          sampleDir_(sampleDir),dictDir_(dictDir),vocab_(NULL)
+          :sampleDir_(sampleDir),dictDir_(dictDir),vocabModel_(NULL)
         {
+            vocabModel_ = new Zeus::nlp::VocabModel(dictDir, sampleDir);
         }
 
         ~Vectorize()
         {
-            if(vocab_ != NULL)
-                delete vocab_;
-            vocab_ = NULL;
+            if(vocabModel_ != NULL)
+                delete vocabModel_;
+            vocabModel_ = NULL;
         }
 
-        void getfeatures(){
+        // Select Topk feature as the final features
+        void getfeatures(const std::size_t Topk=1000){
+            vocabModel_->getFeatures(sampleDir_, featureVec_, Topk);
         }
         
-        void segment(){
+        bool isNeedClean(std::string& str){
+            return vocabModel_->isNeedClean(str);    
         }
 
-        void bigram(){
+        void segment(const std::string& line, std::vector<std::string>& token){
+            vocabModel_->segment(line, token);
+        }
+        
+        // Construct token as bigram
+        void bigram(std::vector<std::string>& token){
+            vocabModel_->bigramModel(token);
         }
 
+        // Vectorize for every string
         void vectorize(){
         }
 
         void store(){
+            std::ofstream ofs((sampleDir_+"/feature").c_str());
+            for(uint32_t i = 0; i < featureVec_.size(); ++i)
+                ofs << featureVec_[i].first << "," << featureVec_[i].second << std::endl;
+            ofs.close();
         }
-
-
 
 }; 
 

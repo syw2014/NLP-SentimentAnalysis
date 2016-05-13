@@ -79,6 +79,7 @@ class VocabModel
         boost::unordered_map<std::string, float> termScore_;
         // Stop words
         boost::unordered_set<std::string> stopwords_;
+        boost::unordered_set<std::string> specialwords_;
 
         // Normalization, to lower case, remove white space at head and tail 
         std::string normalize_(const std::string& line){
@@ -113,6 +114,21 @@ class VocabModel
             }
             ifs.close();
             assert(stopwords_.size());
+            return true;
+        }
+        
+        bool loadSpecialWords_(const std::string& filename){
+            if(filename.empty())
+                return false;
+            std::ifstream ifs(filename.c_str());
+            std::string line;
+            while(getline(ifs, line)){
+                if(line.empty())
+                    continue;
+                specialwords_.insert(line);
+            }
+            ifs.close();
+            assert(specialwords_.size());
             return true;
         }
 
@@ -192,6 +208,11 @@ class VocabModel
                 std::cout << "Stop words load failed!\n";
                 return;
             }
+            
+            if(!loadSpecialWords_((dictDir_+"/special_char.utf8"))){
+                std::cout << "Stop words load failed!\n";
+                return;
+            }
         }
 
         ~VocabModel()
@@ -210,18 +231,48 @@ class VocabModel
                 std::copy(set_.begin(), set_.end(), std::back_inserter(token));
             }
         }
+
+        // Clean token , remove special characters
+        bool isNeedClean(std::string& token){
+            if(stopwords_.end() != stopwords_.find(token) || isNeedClean_(token))
+                return true;
+          //  boost::unordered_set<std::string>::iterator it;
+          //  for(it = specialwords_.begin(); it != specialwords_.end(); ++it)
+          //      if(token.find(*it) != std::string::npos)
+          //          return true;
+          //  boost::replace_all(token,"，","");
+          //  boost::replace_all(token,"！","");
+          /*  if(token.find("，") != std::string::npos)
+                boost::replace_all(token, "，", "");
+            else if(token.find("！") != std::string::npos)
+                boost::replace_all(token, "！", "");
+                */
+            return false;
+        }
+
         // To extend token terms based on bigram
         // before extension: t1,t2,t3 
         // after extension: t1,t2,t3,t1_t2,t2_t3
         void bigramModel(std::vector<std::string>& token){
+            // token clean
+            std::vector<std::string>::iterator it;
+            for(it = token.begin(); it != token.end(); ++it){
+                if(isNeedClean(*it) || (*it).empty()){
+                    token.erase(it);
+                    it--;
+                }
+            }
             std::vector<std::string> tmp(token);
             token.clear();
             std::size_t i, j, size = tmp.size();
             std::string bigram;
+            
             for(i = 0; i < size; ++i){
                 // clean
-                if(stopwords_.end() != stopwords_.find(tmp[i]) || isNeedClean_(tmp[i]))
+                //if(stopwords_.end() != stopwords_.find(tmp[i]) || isNeedClean_(tmp[i]))
+                if(isNeedClean(tmp[i]))
                     continue;
+                
                 token.push_back(tmp[i]);
                 j = i + 1;
                 if(j < size){
@@ -282,19 +333,21 @@ class VocabModel
                 }
             }
         }
-
+        
+        // Generate positive vocabulary
         void genPosVocab(const std::string& filename){
             std::cout << "[Info] Start vocabulary generation from \"" << filename << "\" ...\n";
             getWordsInfo(filename, vocab_, posDocCnt_);
             std::cout << "[Info]  Vocabulary generation completed.\n";
         }
         
+        // Generate negative vocabulary
         void genNegVocab(const std::string& filename){
             std::cout << "[Info] Start vocabulary generation from \"" << filename << "\" ...\n";
             getWordsInfo(filename, vocab_, negDocCnt_);
             std::cout << "[Info] Vocabulary generation completed.\n";
         }
-        
+        // Generate total vocabulary
         void genVocab(){
             genPosVocab(sampleDir_+"/samples.pos");
             genNegVocab(sampleDir_+"/samples.neg");
@@ -304,16 +357,28 @@ class VocabModel
         }
        
         // Select TopK feaures
-        void getFeatures(const std::string& sampleDir, std::vector<FeatureType>& featVec,const std::size_t TopK=1000){
+        void getFeatures(const std::string& sampleDir, FeatureType& featVec,const std::size_t TopK=1000){
             genPosVocab(sampleDir+"/samples.pos");
             genPosVocab(sampleDir+"/samples.neg");
             termsClean_();
             featureSelection();
-            std::vector<FeatureType> vec(feature_.begin(), featureVec_.begin()+TopK);
+            FeatureType vec(featureVec_.begin(), featureVec_.begin()+TopK);
+            // record score
+           /* boost::unordered_map<std::string, float>::iterator it;
+            float w;
+            for(uint32_t i = 0; i < vec.size(); ++i){
+                it = termScore_.find(vec[i].first);
+                if(it == termScore_.end())
+                    w = 0.0;
+                else
+                    w = it->second;
+                vec[i].second = w;
+            }*/
             featVec.swap(vec);
+            clear();
         }
 
-        // To caculate chi-square test value and select features
+        // To caculate chi-square value and tf-idf to select features,
         // TODO: optimization
         void featureSelection(){
             VocabType::iterator it;
@@ -329,8 +394,7 @@ class VocabModel
                 featureVec_[i] = std::make_pair(it->first, w);
                 it->second.score = w;
                 termScore_[it->first] = r;
-            }
-             
+            }             
             // Sort
             std::sort(featureVec_.begin(), featureVec_.end(), Zeus::SORT<std::string, float>::sortDescendBySecond);
         }
@@ -354,7 +418,7 @@ class VocabModel
         
         // Clear all occupy memory
         void clear(){
-            std::vector<FeatureType> tmp;
+            FeatureType tmp;
             featureVec_.swap(tmp);
             termScore_.clear();
             vocab_.clear();
