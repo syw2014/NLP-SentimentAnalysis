@@ -10,7 +10,7 @@
 ifs = open('samples.pos','r')
 ofs = open('samples.pos_50', 'a')
 cnt = 0;
-while cnt < 50:
+while cnt < 1:
     line = ifs.readline()
     ofs.write(line)
     cnt += 1;

@@ -49,6 +49,7 @@ class Vectorize
                     tf = it->second;
                 float w = (float)tf * featureVec_[i].second;
                 weight[i] = w;
+                //std::cout << "TEST - term: " << featureVec_[i].first << ":" << featureVec_[i].second << ":" << tf << std::endl;
                 sum += w*w;
                 }else{
                     weight[i] = 0.0;
@@ -187,7 +188,7 @@ class Vectorize
         bool readLine(const std::string& line, std::ofstream& ofs){
             std::vector<std::string> token;
             std::vector<float> element;
-            uint32_t pos = line.find('\t');
+            std::string::size_type pos = line.find('\t');
             if(pos == std::string::npos)
                 return false;
             std::string label = line.substr(0, pos);
@@ -234,6 +235,7 @@ class Vectorize
             end = clock();
             ifs.clear();
             ifs.close();
+            //ofs.close();
             std::cout << "[LOG INFO] Positive samples vectorization completed! Time cost: "
                     << (double)(end - start)/CLOCKS_PER_SEC/60 << "min." 
                     <<" Positive size: " << sampleVec_.size() << std::endl;
