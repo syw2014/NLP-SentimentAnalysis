@@ -27,6 +27,7 @@
 #include <boost/unordered_map.hpp>
 #include <boost/unordered_set.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
 
@@ -236,17 +237,6 @@ class VocabModel
         bool isNeedClean(std::string& token){
             if(stopwords_.end() != stopwords_.find(token) || isNeedClean_(token))
                 return true;
-          //  boost::unordered_set<std::string>::iterator it;
-          //  for(it = specialwords_.begin(); it != specialwords_.end(); ++it)
-          //      if(token.find(*it) != std::string::npos)
-          //          return true;
-          //  boost::replace_all(token,"，","");
-          //  boost::replace_all(token,"！","");
-          /*  if(token.find("，") != std::string::npos)
-                boost::replace_all(token, "，", "");
-            else if(token.find("！") != std::string::npos)
-                boost::replace_all(token, "！", "");
-                */
             return false;
         }
 
@@ -336,16 +326,16 @@ class VocabModel
         
         // Generate positive vocabulary
         void genPosVocab(const std::string& filename){
-            std::cout << "[Info] Start vocabulary generation from \"" << filename << "\" ...\n";
+            std::cout << "[LOG INFO] Start vocabulary generation from \"" << filename << "\" ...\n";
             getWordsInfo(filename, vocab_, posDocCnt_);
-            std::cout << "[Info]  Vocabulary generation completed.\n";
+            std::cout << "[LOG INFO] Vocabulary generation completed.\n";
         }
         
         // Generate negative vocabulary
         void genNegVocab(const std::string& filename){
-            std::cout << "[Info] Start vocabulary generation from \"" << filename << "\" ...\n";
+            std::cout << "[LOG INFO] Start vocabulary generation from \"" << filename << "\" ...\n";
             getWordsInfo(filename, vocab_, negDocCnt_);
-            std::cout << "[Info] Vocabulary generation completed.\n";
+            std::cout << "[LOG INFO] Vocabulary generation completed.\n";
         }
         // Generate total vocabulary
         void genVocab(){

@@ -15,8 +15,10 @@ int main(int argc, char* argv[])
     Zeus::nlp::Vectorize* vectorize = NULL;
 
     vectorize = new Zeus::nlp::Vectorize(sampleDir, dictDir);
-    vectorize->getfeatures();
-    vectorize->store();
+    //vectorize->getfeatures();
+    vectorize->loadFeature();
+    vectorize->vectorize();
+   // vectorize->store();
 
     delete vectorize;
     vectorize = NULL;

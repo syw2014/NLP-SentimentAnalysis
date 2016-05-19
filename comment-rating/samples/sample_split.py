@@ -8,9 +8,9 @@
 # ------------------------------------
 
 ifs = open('samples.pos','r')
-ofs = open('samples.pos.cnt', 'a')
+ofs = open('samples.pos_50', 'a')
 cnt = 0;
-while cnt < 2000000:
+while cnt < 50:
     line = ifs.readline()
     ofs.write(line)
     cnt += 1;
