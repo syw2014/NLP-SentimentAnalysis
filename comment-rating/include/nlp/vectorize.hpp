@@ -205,9 +205,23 @@ class Vectorize
             process(content, element);
             if(isAllZero(element))
                 return false;
+            // Flush sample ID, label
             ofs << sampleID_ << "," << L;
-            for(uint32_t i = 0; i < element.size(); ++i)
-                ofs << "," << element[i];
+           // for(uint32_t i = 0; i < element.size(); ++i)
+           //     ofs << "," << element[i];
+            // TODO Optimization
+            // Data compression, we only store the element which score is bigger than zero
+            // the store formate like : 'index:score'
+            std::stringstream ss;
+            std::string score;
+            for(uint32_t i = 0; i < element.size(); ++i){
+                if(element[i] <= 0.0)
+                    continue;
+                ss << i << ":" << element[i];
+                score = ss.str();
+                ofs << "," << score;
+                ss.str("");
+            }
             ofs << std::endl;
             //sampleVec_.push_back(std::make_pair(id_label, element));
             sampleID_ += 1;
@@ -235,7 +249,7 @@ class Vectorize
             end = clock();
             ifs.clear();
             ifs.close();
-            //ofs.close();
+           // ofs.close();
             std::cout << "[LOG INFO] Positive samples vectorization completed! Time cost: "
                     << (double)(end - start)/CLOCKS_PER_SEC/60 << "min." 
                     <<" Positive size: " << sampleVec_.size() << std::endl;
