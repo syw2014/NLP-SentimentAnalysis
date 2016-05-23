@@ -217,7 +217,7 @@ class Vectorize
             for(uint32_t i = 0; i < element.size(); ++i){
                 if(element[i] <= 0.0)
                     continue;
-                ss << i << ":" << element[i];
+                ss << (i+1) << ":" << element[i];
                 score = ss.str();
                 ofs << " " << score;
                 ss.str("");

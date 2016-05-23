@@ -1,0 +1,3 @@
+comment_scale analyize:
+        - positive, 1791178, label is '1'
+        - negative, 1156992, label is '-1'
