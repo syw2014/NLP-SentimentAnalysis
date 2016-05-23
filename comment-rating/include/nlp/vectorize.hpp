@@ -206,7 +206,7 @@ class Vectorize
             if(isAllZero(element))
                 return false;
             // Flush sample ID, label
-            ofs << sampleID_ << "," << L;
+            ofs << L;
            // for(uint32_t i = 0; i < element.size(); ++i)
            //     ofs << "," << element[i];
             // TODO Optimization
@@ -219,7 +219,7 @@ class Vectorize
                     continue;
                 ss << i << ":" << element[i];
                 score = ss.str();
-                ofs << "," << score;
+                ofs << " " << score;
                 ss.str("");
             }
             ofs << std::endl;
@@ -237,7 +237,7 @@ class Vectorize
                 std::cout << "Open samples error!\n";
                 return;
             }
-            std::ofstream ofs((sampleDir_+"/vectorization").c_str());
+            std::ofstream ofs((sampleDir_+"/comment_scale").c_str());
             std::string line;
             clock_t start, end;
             start = clock();
@@ -279,9 +279,9 @@ class Vectorize
             std::ofstream ofs((sampleDir_+"/vectorization").c_str());
             for(std::size_t j = 0; j < sampleVec_.size(); ++j){
                 std::size_t size = sampleVec_[j].second.size();
-                ofs << sampleVec_[j].first.first << "," << sampleVec_[j].first.second;
+                ofs << sampleVec_[j].first.first << " " << sampleVec_[j].first.second;
                 for(std::size_t k = 0; k < size; ++k)
-                    ofs << "," << sampleVec_[j].second[k];
+                    ofs << " " << sampleVec_[j].second[k];
                 ofs << std::endl;
             }
             ofs.close();

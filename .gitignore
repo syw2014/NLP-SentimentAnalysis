@@ -6,4 +6,5 @@ comment-rating/samples/vocab*
 comment-rating/test/t_feature_selection_tfidf
 comment-rating/test/bin/
 comment-rating/samples/feat*
-comment-rating/samples/vectorization
+comment-rating/samples/comment_scale
+comment-rating/samples/test_data
