@@ -1,0 +1,37 @@
+#      g++ t_segmentWapper.cc -o bin/t_segmentWrapper -I ../include/ -I /work/SF1R_Proj/hobby/hearse/cppjieba/include 
+#      -I /work/SF1R_Proj/hobby/hearse/cppjieba/deps -lboost_system -lboost_filesystem /work/SF1R_Proj/hobby/zeus/comment-rating/include/pattern/singleton.cpp
+#          
+#  use singleton.hpp
+#    g++ t_segmentWapper.cc -o bin/t_segmentWrapper -I ../include/ -I /work/SF1R_Proj/hobby/hearse/cppjieba/include i
+#    -I /work/SF1R_Proj/hobby/hearse/cppjieba/deps -lboost_system -lboost_filesystem
+
+# t_genFeature.cc
+#     g++ t_genFeature.cc -o bin/t_genFeature -I ../include/ -I /work/SF1R_Proj/hobby/hearse/cppjieba/include -I /work/SF1R_Proj/hobby/hearse/cppjieba/deps -lboost_system -lboost_filesystem
+#
+#     # t_feature_selection_tfidf.cc
+#    g++ t_feature_selection_tfidf.cc -o bin/t_feature_selection_tfidf -I ../include/
+#
+
+
+
+
+INC:= ../include/
+INC_JIEBA:=/work/SF1R_Proj/hobby/hearse/cppjieba/include
+INC_JIEBA_DEP:=/work/SF1R_Proj/hobby/hearse/cppjieba/deps
+
+
+TARGET=t_vectorize
+
+SOURCE=$(TARGET).cc
+
+all: $(TARGET) output
+
+$(TARGET): $(SOURCE)
+	g++ -o $(TARGET) $(SOURCE) -I $(INC) -I $(INC_JIEBA) -I $(INC_JIEBA_DEP) -lboost_system -lboost_filesystem
+
+output: $(TARGET)
+	@echo; echo "Copy executable files ..."
+	@mv -v $(TARGET) bin/
+
+clean:
+	rm -rf bin/$(TARGET) *.ext *.o

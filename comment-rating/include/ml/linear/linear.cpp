@@ -3029,11 +3029,14 @@ const char *check_parameter(const problem *prob, const parameter *param)
 	return NULL;
 }
 
+// Modified to output probability for all models 
+// JerryShi 2016-05-31 13:57:30
 int check_probability_model(const struct model *model_)
 {
-	return (model_->param.solver_type==L2R_LR ||
+/*	return (model_->param.solver_type==L2R_LR ||
 			model_->param.solver_type==L2R_LR_DUAL ||
-			model_->param.solver_type==L1R_LR);
+			model_->param.solver_type==L1R_LR);*/
+    return 1;
 }
 
 int check_regression_model(const struct model *model_)
