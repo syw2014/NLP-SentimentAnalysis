@@ -49,7 +49,7 @@ class Predict
         double target_square_sum_;  // all the target label square summation
         double predict_target_sum_;  // all the target label square summation
 
-        int nr_class_, nr_feature_, n_; // class number, feature dimension, unkonw
+        int nr_class_, nr_feature_, n_; // class number, feature dimension, to determine whether there's a bias
 
         struct model* model_;       // linear model
 
@@ -90,7 +90,16 @@ class Predict
         ~Predict(){
             free_and_destroy_model(&model_);
         }
-
+        
+        int GetNRClass(){
+            return nr_class_;
+        }
+        int GetNRFeature(){
+            return nr_feature_;
+        }
+        double GetModelBias(){
+            return model_->bias;
+        }
         // Interface:
         // Returns the predicted class label for input sample, in this case is +1 or -1. 
         // Make sure the sample type is 'struct feature_node*'.
@@ -102,7 +111,7 @@ class Predict
         // Returns the predicted class label and the probability belongs to each class.
         // The output probability likes: 0.5000(lable +1) 0.5000(label -1)
         double PredictWithProbability(const FeatureType* sample, double* prob_estimates){
-            int j;
+            //prob_estimates = (double*)malloc(nr_class_*sizeof(double));
             return predict_probability(model_, sample, prob_estimates);
         }
 
@@ -120,7 +129,6 @@ class Predict
                 std::cout << "File \"" << filename << "\" open failed!\n";
                 return;
             }
-            //FILE* output = fopen("sample.pre", "w");
             std::ofstream ofs("sample.pre");
             std::string line;
             double target_label, predict_label;
