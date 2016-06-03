@@ -13,3 +13,5 @@ training model.
     - String Tokenize Algorithms(designed by ourself)
     - Feature selection/extraction, tf-idf, CHI-square,LDA(not used in this version)
     - Model, linear/svm
+
+##3.Evalution
