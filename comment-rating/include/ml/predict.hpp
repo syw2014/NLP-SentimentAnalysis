@@ -40,18 +40,18 @@ class Predict
 {
     private:
         //int flag_predict_probability_; //  a flag to print predict probability for logistic regression
-        int correct_; // the number of correct prediction sample
-        int total_;   // the total number of predict sample
-        double error_;    // the mean square error
+        int correct_;         // the number of correct prediction sample
+        int total_;           // the total number of predict sample
+        double error_;        // the mean square error
         double predict_sum_;  // predict label summation
         double target_sum_;   // target label summation
         double predict_square_sum_; // all the predict label square summation 
         double target_square_sum_;  // all the target label square summation
-        double predict_target_sum_;  // all the target label square summation
+        double predict_target_sum_; // all the target label square summation
 
         int nr_class_, nr_feature_, n_; // class number, feature dimension, to determine whether there's a bias
 
-        struct model* model_;       // linear model
+        struct model* model_;           // linear model
 
 
     public:
@@ -91,15 +91,19 @@ class Predict
             free_and_destroy_model(&model_);
         }
         
+        // GET number of class
         int GetNRClass(){
             return nr_class_;
         }
+        // GET number of feature
         int GetNRFeature(){
             return nr_feature_;
         }
+        // GET bias if exist 
         double GetModelBias(){
             return model_->bias;
         }
+
         // Interface:
         // Returns the predicted class label for input sample, in this case is +1 or -1. 
         // Make sure the sample type is 'struct feature_node*'.
@@ -111,7 +115,6 @@ class Predict
         // Returns the predicted class label and the probability belongs to each class.
         // The output probability likes: 0.5000(lable +1) 0.5000(label -1)
         double PredictWithProbability(const FeatureType* sample, double* prob_estimates){
-            //prob_estimates = (double*)malloc(nr_class_*sizeof(double));
             return predict_probability(model_, sample, prob_estimates);
         }
 
@@ -163,7 +166,7 @@ class Predict
                             continue;
                         int idx;
                         double val;
-                        try{
+                        try{  // if index and value parse failed then abandon
                             idx = boost::lexical_cast<int>(vec[j].substr(0, pos));
                             val = boost::lexical_cast<double>(vec[j].substr(pos+1));
                         }catch(...){
@@ -179,16 +182,18 @@ class Predict
                             break;
                 }
 
-                //---
+                // if the bais is exist, then add a element in sample struct pointer
+                // index = nr_feature(default) +1
+                // value = model_bias;
                 if( model_->bias >= 0){
                     x[i].index = n_;
                     x[i].value = model_->bias;
                     i++;
                 }
-                x[i].index = -1; // last one ?
+                // indicate this is the end of feature struct pointer
+                x[i].index = -1; 
                 
                 // predict
-               // predict_label = SamplePredict(x);
                predict_label = PredictWithProbability(x, prob_estimates);
                ofs << predict_label;
                for(int k = 0; k < nr_class_; ++k)
@@ -207,7 +212,6 @@ class Predict
             }
             ifs.close();
             ofs.close();
-            //fclose(output);
             // Print the final result
 /*            std::cout << "Mean squared error = " << (double)error_ / total_ << std::endl;
             std::cout << "Squared correlation coefficient = " 
@@ -224,5 +228,5 @@ class Predict
 };
 } // namespace ml
 
-#endif // predict.hpp
+#endif // ml/predict.hpp
 
