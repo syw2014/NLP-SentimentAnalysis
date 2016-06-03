@@ -1,0 +1,15 @@
+#Sentiment Analysis System
+
+##1.Introduction
+    Sentiment Analysis system is a NLP-ML system,which was a supervised learning system.In the current version there are only two emotions(good and bad), 
+when you give some abritrary text,the system will analyise the text, then output the label and it's membership score.As it's supervised learning problem
+,so when to run this system you should prepare samples(in this system , I had used the comments with good , bad and medium of products as samples),then
+choose methods to generate features and select/extract key features,after feature preparation , we should vectorize the samples that they can be used in
+training model.
+
+
+##2.Related Algorithms and models
+    The algorithms and models used in this system show as list:
+    - String Tokenize Algorithms(designed by ourself)
+    - Feature selection/extraction, tf-idf, CHI-square,LDA(not used in this version)
+    - Model, linear/svm
