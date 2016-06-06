@@ -16,9 +16,8 @@
 
 
 INC:= ../include/
-INC_JIEBA:=/work/SF1R_Proj/hobby/hearse/cppjieba/include
-INC_JIEBA_DEP:=/work/SF1R_Proj/hobby/hearse/cppjieba/deps
-
+INC_JIEBA:=../../common/cppjieba/
+INC_JIEBA_DEP:=../../common/cppjieba/deps
 
 TARGET=t_vectorize
 

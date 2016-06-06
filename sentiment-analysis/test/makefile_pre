@@ -1,0 +1,21 @@
+
+INC:= ../include/
+INC_JIEBA:=../../common/cppjieba/
+INC_JIEBA_DEP:=../../common/cppjieba/deps
+
+TARGET=t_predict
+
+SOURCE=$(TARGET).cc ../include/ml/linear/linear.cpp \
+	   ../include/ml/linear/tron.cpp
+
+all: $(TARGET) output
+
+$(TARGET): $(SOURCE)
+	g++ -o $(TARGET) $(SOURCE) -I $(INC)  -lboost_system -lboost_filesystem
+
+output: $(TARGET)
+	@echo; echo "Copy executable files ..."
+	@mv -v $(TARGET) bin/
+
+clean:
+	rm -rf bin/$(TARGET) *.ext *.o

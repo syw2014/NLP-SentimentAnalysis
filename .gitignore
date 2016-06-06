@@ -1,10 +1,10 @@
 *.swp
 dict/
 t_segmentWapper
-comment-rating/samples/samples*
-comment-rating/samples/vocab*
-comment-rating/test/t_feature_selection_tfidf
-comment-rating/test/bin/
-comment-rating/samples/feat*
-comment-rating/samples/comment_scale
-comment-rating/samples/test_data
+sentiment-analysis/samples/samples*
+sentiment-analysis/samples/vocab*
+sentiment-analysis/test/t_feature_selection_tfidf
+sentiment-analysis/test/bin/
+sentiment-analysis/samples/feat*
+sentiment-analysis/samples/comment_scale
+sentiment-analysis/samples/test_data
