@@ -17,9 +17,12 @@
 // boost data struct
 #include <boost/unordered_map.hpp>
 #include <boost/unordered_set.hpp> 
-
 #include <boost/lexical_cast.hpp>
 
+
+// auto ptr
+#include <boost/shared_ptr.hpp>
+#include <boost/scoped_ptr.hpp>
 // boost filesystem
 //
 //

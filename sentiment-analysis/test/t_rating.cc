@@ -17,13 +17,13 @@ int main(int argc, char* argv[])
     ml::Rating* pRating = NULL;
     pRating = new ml::Rating(featureDir, dictDir, modelDir);
     std::vector<float> elem;
-    double score;
+    double score, label;
   //  ml::FeatureType* pSample = NULL;
     std::cout << "Input string: \n";
     while(std::cin >> line){
         std::cout << "str: " << line << std::endl;
-        pRating->PredictClassLabel(line, score);
-        std::cout << "TEST SCORE: " << score << std::endl;
+        label = pRating->PredictClassLabel(line, score);
+        std::cout <<"Label: " <<label <<" SCORE: " << score << std::endl;
         std::cout << "Input string: \n";
     }
     

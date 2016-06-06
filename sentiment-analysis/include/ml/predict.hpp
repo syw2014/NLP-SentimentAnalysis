@@ -155,7 +155,7 @@ class Predict
                     continue;
                 }
                 // parse every index:value pair and store in sample x
-                int j=0,i=0; // j is loop control variable, i is the index of 'x'
+                uint32_t j=0,i=0; // j is loop control variable, i is the index of 'x'
                 for(j=1; j < vec.size(); ++j){
                     if(i >= max_nr_attr - 2){ // need one more for index = -1
                         max_nr_attr *= 2;

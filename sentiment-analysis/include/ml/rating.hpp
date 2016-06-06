@@ -91,8 +91,8 @@ class Rating
                 return;
             }
             
-            int max_size = 64; // default memory size of pSample
-            int i, j=0;
+            uint32_t max_size = 64; // default memory size of pSample
+            uint32_t i, j=0;
             for(i = 0; i < element.size(); ++i){
                 if(element[i] == 0)
                     continue;
@@ -130,14 +130,14 @@ class Rating
             pSample = (ml::FeatureType*)malloc(max_size*sizeof(ml::FeatureType));
             GenerateSampleVector(str, element);
             VectorToSampleType(element, pSample);
-            PredictWithProbability(pSample, predict_prob);
+            return PredictWithProbability(pSample, predict_prob);
             
             free(pSample);
         }
 
 
         // Predict which label(+1 or -1) the text belongs to.
-        void PredictWithProbability(const ml::FeatureType* pSample, double& predict_prob){
+        double PredictWithProbability(const ml::FeatureType* pSample, double& predict_prob){
             double* prob_estimiates = NULL;
             prob_estimiates = (double*)malloc(nr_class_*sizeof(double));
             prob_estimiates[0] = 1.1;
@@ -149,6 +149,7 @@ class Rating
             std::cout << std::endl;
             predict_prob = prob_estimiates[0];
             free(prob_estimiates);
+            return label;
         }
 };
 

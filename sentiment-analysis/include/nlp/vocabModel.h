@@ -152,7 +152,6 @@ class VocabModel
         }
         
         bool isAlphaNumberic_(const std::string& term){
-            uint16_t uchar;
             std::string nstr = boost::replace_all_copy(term, ".", "");
             std::string::size_type i;
             for(i = 0; i < nstr.size(); ++i){
@@ -289,7 +288,7 @@ class VocabModel
             std::string line;
             std::vector<std::string> token;
             while(getline(ifs, line)){
-                uint32_t pos = line.find('\t');
+                std::size_t pos = line.find('\t');
                 if(pos == std::string::npos)
                     continue;
                 std::string label = line.substr(0,pos);

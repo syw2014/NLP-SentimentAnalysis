@@ -63,7 +63,7 @@ class Vectorize
 
     public:
         Vectorize(const std::string& sampleDir, const std::string& dictDir)
-          :sampleDir_(sampleDir),dictDir_(dictDir),sampleID_(0),vocabModel_(NULL)
+          :sampleDir_(sampleDir),dictDir_(dictDir),vocabModel_(NULL),sampleID_(0)
         {
             vocabModel_ = new Zeus::nlp::VocabModel(dictDir, sampleDir);
         }
