@@ -9,9 +9,9 @@
 
 int main(int argc, char* argv[])
 {
-    std::string featureDir = "../../samples";
+    std::string featureDir = "../../model";
     std::string dictDir = "../../../dict";
-    std::string modelDir = "/work/SF1R_Proj/hobby/ml/liblinear/comment_scale.model";
+    std::string modelDir = "../../model/comment_scale.model";
     std::string line;
 
     ml::Rating* pRating = NULL;
