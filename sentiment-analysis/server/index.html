@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Sentiment Analysis</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style type="text/css">
+    * { outline: none; }
+    body {
+      background-color: #778899; margin: 0;
+      padding: 0; font: 16px/1.4 Helvetica, Arial, sans-serif;
+      font: 16px/1.4 Helvetica, Arial, sans-serif;
+    }
+    div.content {
+      width: 800px; margin: 2em auto; padding: 20px 50px;
+      background-color: #fff; border-radius: 1em;
+    }
+    label { display: inline-block; min-width: 7em; }
+    input { border: 2px solid #ccc; padding: 0.5em; }
+    a:link, a:visited { color: #69c; text-decoration: none; }
+    @media (max-width: 700px) {
+      body { background-color: #fff; }
+      div.content { width: auto; margin: 0 auto; padding: 1em; }
+    }
+</style>
+
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script language="javascript" type="text/javascript">
+  jQuery(function() {
+
+    $(document).ready(function() {
+        $("button").click('#words',function(){
+      $.ajax({
+        url: '/api/v1/rating',
+        method: 'POST',
+        dataType: 'json',
+        data: { words: $('#words').val() },
+        success: function(json) {
+          $('#result').html(json.result);
+        }
+      });
+      });
+    });
+
+  });
+</script>
+</head>
+<body>
+  <div class="content">
+    <h1>Sentiment Analysis Demo.</h1>
+
+    <p>
+      This page demonstrates how emotional analyst to analyize your feelings.
+      In the current version she only can distinguish negative and positive, 
+      but in future she will learn how to distinguish other emotions. Now input 
+      whatever you want to say, the analyst will give your results.
+    </p>
+
+    <div>
+      <textarea id="words" style="width:300px;height:100px;" value="Sentence"></textarea>
+    </div><div>
+        <button style="color:#006400">Parse</button><div>
+    </div><div>
+     <label style="color:#5F9EA0">Your attitude:</label> <span id="result" style="color:#0000ff">&nbsp;</span>
+    </div><div>
+
+  </div>
+</body>
+</html>

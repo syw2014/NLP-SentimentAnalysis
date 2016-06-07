@@ -10,7 +10,7 @@
 #include "glog/logging.h"
 
 // glog configuration
-void InitGlog(const char* cProgam, const char* logDir){
+/*void InitGlog(const char* cProgam, const char* logDir){
 
     char cInfoPath[100];
     char cErrPath[100];
@@ -34,7 +34,7 @@ void InitGlog(const char* cProgam, const char* logDir){
     google::SetLogDestination(google::GLOG_WARNING,cWarnPath);
     google::SetLogDestination(google::GLOG_FATAL,cFatalPath);
 }
-
+*/
 // ---------
 // Auto pointer point to ml::Rating
 boost::shared_ptr<ml::Rating> pRating;
