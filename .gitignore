@@ -8,3 +8,4 @@ sentiment-analysis/test/bin/
 sentiment-analysis/samples/feat*
 sentiment-analysis/samples/comment_scale
 sentiment-analysis/samples/test_data
+word-embeddings/resource/
