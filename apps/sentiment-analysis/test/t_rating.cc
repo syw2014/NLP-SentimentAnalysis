@@ -10,7 +10,7 @@
 int main(int argc, char* argv[])
 {
     std::string featureDir = "../../model";
-    std::string dictDir = "../../../dict";
+    std::string dictDir = "../../../../dict";
     std::string modelDir = "../../model/comment_scale.model";
     std::string line;
 

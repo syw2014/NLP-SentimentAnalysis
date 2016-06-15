@@ -69,7 +69,7 @@ static void ev_handler(struct mg_connection *nc, int ev, void *ev_data) {
 int main(int argc, char *argv[]) {
     
     std::string featureDir("../model");
-    std::string dictDir("../../dict");
+    std::string dictDir("../../../dict");
     std::string model("../model/comment_scale.model");
     pRating.reset(new ml::Rating(featureDir, dictDir, model));
 

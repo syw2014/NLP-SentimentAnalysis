@@ -1,16 +1,17 @@
 
-INC:= ../../include/
-INC_JIEBA:=../../common/cppjieba/
-INC_JIEBA_DEP:=../../common/cppjieba/deps
+WORK_PTH=../../../
+INC:= $(WORK_PTH)include/
+INC_JIEBA:=$(WORK_PTH)common/cppjieba/
+INC_JIEBA_DEP:=$(WORK_PTH)common/cppjieba/deps
 
 
-TARGET=rating
+TARGET=restful_server
 
-SOURCE=$(TARGET).cc  mongoose.c ../../include/ml/linear/linear.cpp \
-	   ../../include/ml/linear/tron.cpp ../../libs/linear/blas/blas.a
+SOURCE=$(TARGET).cc  mongoose.c $(WORK_PTH)include/ml/linear/linear.cpp \
+	   $(WORK_PTH)include/ml/linear/tron.cpp $(WORK_PTH)libs/linear/blas/blas.a
 
 CFLAGS = -W -Wall -I ./ -pthread -g -O2 -DMONGOOSE_ENABLE_THREADS $(CFLAGS_EXTRA)
-LDFLAGS = -lboost_system -lboost_filesystem  -lglog
+LDFLAGS = -lboost_system -lboost_filesystem -lglog
 CC=g++
 
 

@@ -11,7 +11,7 @@
 int main(int argc, char* argv[])
 {
     std::string sampleDir = "../../samples";
-    std::string dictDir = "../../../dict";
+    std::string dictDir = "../../../../dict";
     Zeus::nlp::Vectorize* vectorize = NULL;
 
     vectorize = new Zeus::nlp::Vectorize(sampleDir, dictDir);

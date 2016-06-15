@@ -1,13 +1,14 @@
 
-INC:= ../../include/
-INC_JIEBA:=../../common/cppjieba/
-INC_JIEBA_DEP:=../../common/cppjieba/deps
+WORK_PTH:=../../../
+INC:= $(WORK_PTH)include/
+INC_JIEBA:=$(WORK_PTH)common/cppjieba/
+INC_JIEBA_DEP:=$(WORK_PTH)common/cppjieba/deps
 
 
 TARGET=t_rating
 
-SOURCE=$(TARGET).cc ../../include/ml/linear/linear.cpp \
-	   ../../include/ml/linear/tron.cpp ../../libs/linear/blas/blas.a
+SOURCE=$(TARGET).cc $(WORK_PTH)include/ml/linear/linear.cpp \
+	   $(WORK_PTH)include/ml/linear/tron.cpp $(WORK_PTH)libs/linear/blas/blas.a
 
 all: $(TARGET) output
 
