@@ -1,13 +1,13 @@
 
-INC:= ../include/
+INC:= ../../include/
 INC_JIEBA:=../../common/cppjieba/
 INC_JIEBA_DEP:=../../common/cppjieba/deps
 
 
 TARGET=t_rating
 
-SOURCE=$(TARGET).cc ../include/ml/linear/linear.cpp \
-	   ../include/ml/linear/tron.cpp ../libs/linear/blas/blas.a
+SOURCE=$(TARGET).cc ../../include/ml/linear/linear.cpp \
+	   ../../include/ml/linear/tron.cpp ../../libs/linear/blas/blas.a
 
 all: $(TARGET) output
 
