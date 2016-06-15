@@ -17,6 +17,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/shared_ptr.hpp>
 
 // Sort by second
 // NOTE: Typename R muse be comparable
@@ -107,8 +108,8 @@ class SegmentWrapper
         bool isNeedClean_(const std::string& term){
             if(term.empty())
                 return true;
-            if(term.length() < 4 || term.length() > 31)
-                return true;
+           // if(term.length() < 4 || term.length() > 31)
+           //     return true;
             if(isAlphaNumberic(term))
                 return true;
             return false;
@@ -130,8 +131,10 @@ class SegmentWrapper
                 tmp.clear();
             }
             token.resize(tmp.size());
-            for(uint32_t i = 0; i < tmp.size(); ++i)
+            for(uint32_t i = 0; i < tmp.size(); ++i){
+                boost::replace_all(tmp[i].first, "[", "");
                 token[i] = tmp[i].first;
+            }
             if(dedup){
                 std::set<std::string> set_(token.begin(), token.end());
                 token.clear();

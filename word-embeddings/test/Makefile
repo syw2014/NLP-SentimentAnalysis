@@ -1,6 +1,8 @@
 
+Proj=t_segment
+
 Target:
-	 g++ t_user_profile.cc -o t_user_profile -I ../include/    -lboost_system -lboost_thread
+	 g++ $(Proj).cc -o $(Proj) -I ../include/    -lboost_system -lboost_thread
 
 clean:
-	rm t_user_profile
+	rm $(Proj)
