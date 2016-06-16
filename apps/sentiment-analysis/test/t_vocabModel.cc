@@ -11,7 +11,7 @@
 int main(int argc, char* argv[])
 {
     std::string sampleDir = "../../samples";
-    std::string dictDir = "../../../../dict";
+    std::string dictDir = "../../../../resource/jieba";
     Zeus::nlp::VocabModel* gen = NULL;
 
     gen = new Zeus::nlp::VocabModel(dictDir, sampleDir);

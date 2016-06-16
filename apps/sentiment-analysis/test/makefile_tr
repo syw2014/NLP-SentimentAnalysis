@@ -14,10 +14,10 @@
 
 
 
-
-INC:= ../include/
-INC_JIEBA:=../../common/cppjieba/
-INC_JIEBA_DEP:=../../common/cppjieba/deps
+WORK_PTH:=../../../
+INC:= $(WORK_PTH)include/
+INC_JIEBA:=$(WORK_PTH)common/cppjieba/
+INC_JIEBA_DEP:=$(WORK_PTH)common/cppjieba/deps
 
 TARGET=t_vectorize
 

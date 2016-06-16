@@ -11,7 +11,7 @@
 int main(int argc, char* argv[])
 {
     clock_t start, end;
-    std::string dictDir = "../../dict";
+    std::string dictDir = "../../../../resource/jieba";
     start = clock();
     if(!Zeus::nlp::SegmentWrapper::get()->loadDictFiles(dictDir)){
         std::cout << "Resources loaded failed!\n";

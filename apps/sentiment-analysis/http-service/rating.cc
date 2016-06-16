@@ -130,7 +130,7 @@ int main(int argc, char* argv[])
     //InitGlog("HotDealTagging", "../resource/log");
     int thread_num = 22;
     std::string featureDir("../model");
-    std::string dictDir("../../../dict");
+    std::string dictDir("../../../resource/jieba");
     std::string model("../model/comment_scale.model");
     pRating.reset(new ml::Rating(featureDir, dictDir, model));
 
