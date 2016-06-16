@@ -10,7 +10,7 @@
 
 int main(int argc, char* argv[])
 {
-    std::string resDir = "../resource";
+    std::string resDir = "../../../resource/prod";
     ProfileCreate *create_ = NULL;
     //std::cout << "Start to load resources...\n";
     //create_ =  new ProfileCreate(resDir);

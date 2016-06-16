@@ -9,7 +9,7 @@
 #define SGEMENTWRAPPER_H
 
 #include <iostream>
-#include "segment/segment.h"
+#include "segment.h"
 //#include "PropSharedLock.h"
 
 #include <boost/unordered_set.hpp>

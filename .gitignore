@@ -1,5 +1,5 @@
 *.swp
-dict/
+resource/
 t_segmentWapper
 apps/sentiment-analysis/samples/samples*
 apps/sentiment-analysis/samples/vocab*
@@ -8,4 +8,4 @@ apps/sentiment-analysis/test/bin/
 apps/sentiment-analysis/samples/feat*
 apps/sentiment-analysis/samples/comment_scale
 apps/sentiment-analysis/samples/test_data
-word-embeddings/resource/
+apps/word-embeddings/resource/

@@ -5,7 +5,7 @@
  @ Mail: jerryshi0110@gmail.com
  @ Created Time: Tue 14 Jun 2016 06:04:07 PM CST
  ************************************************************************/
-#include "segmentWrapper.h"
+#include "nlp/segment/segmentWrapper.h"
 
 int main(int argc, char* argv[])
 {
@@ -15,7 +15,7 @@ int main(int argc, char* argv[])
     }
     std::string infile = argv[1];
     std::string outfile = argv[2];
-    std::string dict("../resource/dict");
+    std::string dict("../../../resource/prod");
     boost::shared_ptr<SegmentWrapper> segWrapper;
     segWrapper.reset(new SegmentWrapper(dict));
     std::ifstream ifs(infile.c_str());
