@@ -19,7 +19,7 @@
 
 
 #include <iostream>
-#include "nlp/segment/segmentWrapper.hpp"
+#include "nlp/segment/segmentWrapper.h"
 
 // C headers
 #include <stdio.h>
@@ -67,14 +67,14 @@ class WordVectorPredict
             }
             fscanf(ifs, "%lld", &words_num_);  // get the vocabulary size from model file
             fscanf(ifs, "%lld", &vector_size_);   // obtain the dimension of term from model file
-            
+            std::cout << "TEST words num: " << words_num_ << "\t vector size: " << vector_size_ << std::endl; 
             vocab = (char *)malloc((long long)words_num_ * max_w * sizeof(char)); // Alloc memory for all terms
             if(vocab == NULL){
                 std::cout << "Alloc memory: "<< (long long)words_num_ * max_w * sizeof(char) / 1048576 
                             <<"MB for terms failed!\n";
                 return false;
             }
-            M = (float *)malloc((long long)words * (long long)vector_size_ * sizeof(float)); // Alloc memory for all elements
+            M = (float *)malloc((long long)words_num_ * (long long)vector_size_ * sizeof(float)); // Alloc memory for all elements
             if(M == NULL){
                 std::cout << "Alloc memory: " << (long long)words_num_ * vector_size_ * sizeof(float) / 1048576
                             << "MB failed for all elements.\n";
@@ -94,14 +94,14 @@ class WordVectorPredict
                 vocab[b * max_w + a] = 0;
                 for(a = 0; a < vector_size_; ++a)
                     fread(&M[a + b * vector_size_], sizeof(float), 1, ifs);
-                std::size_t len = 0;
+                float len = 0;
                 // Compute the square for every dimension and calcuate the sum for cosine compuataion
                 // Trick,pre-process for cosine
                 for(a = 0; a < vector_size_; ++a)
                     len += M[a + b * vector_size_] * M[a + b*vector_size_];
                 len = sqrt(len);
                 for(a = 0; a < vector_size_; ++a)
-                    M[a + b*size] /= len;
+                    M[a + b*vector_size_] /= len;
             }
             fclose(ifs);
         }
@@ -157,17 +157,21 @@ class WordVectorPredict
            for(a = 0; a < vector_size_; ++a)
                vec[a] = 0;
            // consine pre-process
-           for(a = 0; a < vector_size_; ++a)
-               vec[a] += M[a + b*size];
-           long long elem_square_sum = 0;
-           for(a = 0; a < vector_size_; ++a)
-               elem_square_sum += vec[a] * vec[a];
-           elem_square_sum = sqrt(elem_square_sum);
+           for(a = 0; a < vector_size_; ++a){
+               //std::cout << M[a+b*vector_size_] << std::endl;
+               vec[a] += M[a + b*vector_size_];
+           }
+           float elem_square_sum = 0.0;
+           for(a = 0; a < vector_size_; ++a){
+               elem_square_sum += (float)vec[a] * vec[a];
+           }
+           elem_square_sum = (float)sqrt(elem_square_sum);
            // Trick to accelerate cosine computation
            // cosine = sum(xi*yi)/(|X||Y|)
            // cosine = sum (xi/|X|)*(yi/|Y|)
-           for(a = 0; a < vector_size_; ++a)
-               vec[a] /= elem_square_sum;
+           for(a = 0; a < vector_size_; ++a){
+               vec[a] /= (float)elem_square_sum;
+           }
         }
 
 
@@ -176,7 +180,7 @@ class WordVectorPredict
 
         // To calcuate cosine distance with all the words in vocabulary, and return the 
         // topN nearest words and it's distance.
-        void GetNearestTerms(const std::string& word, 
+        void GetNearestTerms(const std::string& word
                             ,std::vector<float>& best_dist
                             ,std::vector<std::string>& best_words
                             ,uint32_t topN){
@@ -194,7 +198,9 @@ class WordVectorPredict
                    continue;
                float dist = 0.0;
                for(b = 0; b < vector_size_; ++b)   // square accumulation
-                   dist += vec[a] * M[b + a*size];
+               {
+                   dist += vec[b] * M[b + a*vector_size_];
+               }
                // select topN distance and words
                best_dist.resize(topN);
                best_words.resize(topN);
@@ -204,9 +210,11 @@ class WordVectorPredict
                             best_dist[c] = best_dist[c - 1];
                             best_words[c] = best_words[c - 1];
                         }
+                        best_dist[b] = dist;
+                        std::string str(&vocab[a * max_w]);
+                        best_words[b] = str;
+                        break;
                     }
-                    best_dist[b] = dist;
-                    best_words[b] = vocab[a * max_w];
                }
              }
         }
