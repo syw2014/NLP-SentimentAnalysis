@@ -31,6 +31,17 @@ const long long max_size = 2000; // max length of strings
 const long long N = 40;          // number of closest words
 const long long max_w = 50;      // max length of vocabulary entries
 
+
+// Word vector compuate, you can use this class to generate a words vector for
+// a specific word, but the model is limited by the corpus size, if the training
+// corpus is big enough you can find all the word vector you need.Based on the 
+// word vector you can do semantic analysing. Usage:
+// 
+// WordVectorPredict wPre(model_path);
+// std::string word;
+// std::vector<float> bestd;
+// std::vector<std::string> bestw;
+// wPre.GetNearestTerms(word, bestd, bestw, 40);
 class WordVectorPredict
 {
     private:
@@ -96,11 +107,28 @@ class WordVectorPredict
         }
 
     public:
-        WordVectorPredict(){
+        WordVectorPredict(const std::string& model)
+            :model_(model), words_num_(0), vector_size_(0)
+            ,M(NULL), vocab(NULL){
+                std::cout << "Start to load word2vec model...\n";
+                LoadModel_();
+                std::cout << "Word2vec model loaded!\n";
         }
+
         ~WordVectorPredict(){
+            if (M != NULL) {
+                delete M;
+                M = NULL;
+            }
+
+            if (vocab != NULL) {
+                delete vocab;
+                vocab = NULL;
+            }
         }
-        
+       
+        // Given a word ,find it's word vector and index in the whole vocabulary
+        // if exists, if not exists index will be -1, word vecor is empty.
         void GetWordVector(const std::string& word
                             ,long long index
                             ,std::vector<float>& vec){
@@ -147,10 +175,15 @@ class WordVectorPredict
         }
 
         // To calcuate cosine distance with all the words in vocabulary, and return the 
-        // topN nearest words.
-        void GetNearestTerms(const std::string& word, uint32_t topN){
+        // topN nearest words and it's distance.
+        void GetNearestTerms(const std::string& word, 
+                            ,std::vector<float>& best_dist
+                            ,std::vector<std::string>& best_words
+                            ,uint32_t topN){
+             best_dist.clear();
+             best_words.clear();
              std::vector<float> vec;
-             long long index, a;
+             long long index;
              GetWordVector(word, index, vec);
              if(index == -1)
                  return;
@@ -162,11 +195,22 @@ class WordVectorPredict
                float dist = 0.0;
                for(b = 0; b < vector_size_; ++b)   // square accumulation
                    dist += vec[a] * M[b + a*size];
-               // choose topN
+               // select topN distance and words
+               best_dist.resize(topN);
+               best_words.resize(topN);
                for(b = 0; b < topN; ++b){
+                    if (dist > best_dist[b]) {  
+                        for (c = topN - 1; c > b; --c) { 
+                            best_dist[c] = best_dist[c - 1];
+                            best_words[c] = best_words[c - 1];
+                        }
+                    }
+                    best_dist[b] = dist;
+                    best_words[b] = vocab[a * max_w];
                }
              }
         }
+
         // To calcuate the cosine between vector, if the dimension of the two vector is not equal
         // we think the cosine distance is zero.
         float CosineDistance(const std::vector<float>& vec1, const std::vector<float>& vec2){
@@ -181,12 +225,6 @@ class WordVectorPredict
 
         void SentenceVector(){
         }
-
-        // Get the index of word in word dictionary
-        //void GetWordIndex(){
-        //    return word_index_;
-        //}
-
 };
 
 
