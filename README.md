@@ -15,5 +15,11 @@ model in E-commerce.
     - Feature selection/extraction, tf-idf, CHI-square,LDA(not used in this version)
     - Model, linear/svm, word2vec
 
-## 3.Evalution
-## 4.Future Works
+## 3.HowTo
+    This system was dependent on some other open source or libraries, before  test 
+    or use modules in repository, you should check whether the compile environment 
+    is right. The dependent libraries are:
+    - jsoncpp, to parse json data
+    - boost, filesystem, normal functions, unordered_map, string algorithms,etc
+## 4.Evalution
+## 5.Future Works
