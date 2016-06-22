@@ -51,7 +51,9 @@ class WordVectorPredict
        // long long word_index_;   // Store word index in word dictionary
         float *M;                // Memory for all  elemnets, it's size = vocabulary size * dimension * type size(float)              
         char *vocab;             // The memory for all terms, it's size = vocabulary size * term length * type size(char)
-        
+       
+        boost::shared_ptr<SegmentWrapper> segWrapper_;
+        std::string dict_;       // Tokenizer dictionary path
         
         // Load model from file, parse the parameters 
         bool LoadModel_(){
@@ -107,12 +109,20 @@ class WordVectorPredict
         }
 
     public:
-        WordVectorPredict(const std::string& model)
+        WordVectorPredict(const std::string& model, const std::string& dict)
             :model_(model), words_num_(0), vector_size_(0)
-            ,M(NULL), vocab(NULL){
+            ,M(NULL), vocab(NULL), dict_(dict){
                 std::cout << "Start to load word2vec model...\n";
                 LoadModel_();
                 std::cout << "Word2vec model loaded!\n";
+
+                std::cout << "Start to create segment wrapper...\n";
+                if(!dict_.empty()) {
+                    segWrapper_.reset(new SegmentWrapper(dict_));
+                } else {
+                    std::cout << "Create segment wraper failed!\n";
+                    return;
+                }
         }
 
         ~WordVectorPredict(){
@@ -170,12 +180,26 @@ class WordVectorPredict
            // cosine = sum(xi*yi)/(|X||Y|)
            // cosine = sum (xi/|X|)*(yi/|Y|)
            for(a = 0; a < vector_size_; ++a){
-               vec[a] /= (float)elem_square_sum;
+               if (elem_square_sum == 0) {
+                   vec[a] = 0;
+                   continue;
+               } else {
+                    vec[a] /= (float)elem_square_sum;
+               }
            }
         }
-
-
-        float Similarity(){
+        
+        // Computation the similarity of two strings
+        float Similarity(const std::string& lstr, const std::string& rstr){
+            std::vector<float> lvec(vector_size_, 0.0);
+            std::vector<float> rvec(vector_size_, 0.0);
+            SentenceVector(lstr, lvec);
+            SentenceVector(rstr, rvec);
+            double sim = 0.0;
+            if(lvec.empty() || rvec.empty())
+                return sim;
+            sim = CosineDistance(lvec, rvec);
+            return sim;
         }
 
         // To calcuate cosine distance with all the words in vocabulary, and return the 
@@ -231,7 +255,30 @@ class WordVectorPredict
             return dist;
         }
 
-        void SentenceVector(){
+        // Generate a vector for given sentence, firstly segment the string into several
+        // tokens, and get the word vector for every word if exist, then add up the vector.
+        void SentenceVector(const std::string& sents, std::vector<float>& vec){
+            vec.clear();
+            if(sents.empty())
+                return;
+            std::vector<std::string> tokens;
+            segWrapper_->segment(sents, tokens, false);
+            vec.resize(vector_size_);
+            for(uint32_t i = 0; i < vector_size_; ++i)
+                vec[i] = 0.0;
+            std::vector<float> tmpTokenVec(vector_size_, 0);
+            long long index = -1;
+            for (uint32_t i = 0; i < tokens.size(); ++i) {
+                GetWordVector(tokens[i], index, tmpTokenVec);
+                if(tmpTokenVec.empty())
+                    continue;
+                // TODO: optimization
+                // Algorithm to create sentence vector
+                // add up all the dimension to represent sentence vector
+                for (uint32_t j = 0; j < vector_size_; ++j) {
+                    vec[j] += tmpTokenVec[j];
+                }
+            }
         }
 };
 

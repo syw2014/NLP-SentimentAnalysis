@@ -19,6 +19,11 @@
 #include <boost/unordered_set.hpp> 
 #include <boost/lexical_cast.hpp>
 
+// boost unit test framwork
+// statement for auto initialization
+#define BOOST_TEST_MODULE UNIT_TEST
+#include <boost/test/unit_test.hpp>
+#include <boost/test/included/unit_test.hpp>
 
 // auto ptr
 #include <boost/shared_ptr.hpp>
