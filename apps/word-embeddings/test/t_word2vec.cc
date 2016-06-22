@@ -17,15 +17,15 @@ int main(int argc, char* argv[])
     pWordVec.reset(new WordVectorPredict(model, dict));
     std::string str1, str2;
     float sim = 0.0;
-   /* while(1){
+    while(1){
         std::cout << "Input text 1:\n";
         getline(cin, str1);
         std::cout << "Input text 2:\n";
         getline(cin, str2);
         sim = pWordVec->Similarity(str1, str2);
         std::cout << "The similarity is: " << sim << std::endl;
-    }*/
-    std::string word;
+    }
+   /* std::string word;
     std::vector<float> bestd;
     std::vector<std::string> bestw;
     uint32_t topk = 40;
@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
         }
         std::cout << "Input words:\n";
     }
-    
+   */ 
     return 0;
 }
 

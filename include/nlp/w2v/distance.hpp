@@ -182,7 +182,6 @@ class WordVectorPredict
            for(a = 0; a < vector_size_; ++a){
                if (elem_square_sum == 0) {
                    vec[a] = 0;
-                   continue;
                } else {
                     vec[a] /= (float)elem_square_sum;
                }
@@ -268,6 +267,7 @@ class WordVectorPredict
                 vec[i] = 0.0;
             std::vector<float> tmpTokenVec(vector_size_, 0);
             long long index = -1;
+            float sum = tokens.size();
             for (uint32_t i = 0; i < tokens.size(); ++i) {
                 GetWordVector(tokens[i], index, tmpTokenVec);
                 if(tmpTokenVec.empty())
@@ -277,8 +277,18 @@ class WordVectorPredict
                 // add up all the dimension to represent sentence vector
                 for (uint32_t j = 0; j < vector_size_; ++j) {
                     vec[j] += tmpTokenVec[j];
+                    //sum += abs(tmpTokenVec[j]);
                 }
             }
+            std::cout << "TEST SUMM: " << sum << std::endl;
+            // Normalize
+           /* for(uint32_t k = 0; k < vector_size_; ++k)
+                if (sum == 0)
+                    vec[k] = 0;
+                else {
+                    vec[k] /= sum;
+                    //std::cout << "TEST: " << vec[k] << std::endl;
+                }*/ 
         }
 };
 
