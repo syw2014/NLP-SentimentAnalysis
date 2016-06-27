@@ -77,16 +77,16 @@ static int ev_handler(struct mg_connection *conn, enum mg_event ev){
             std::string tmp("");
             double s(0.0);
             if(label == 1)
-                tmp = "好评";
+                tmp = "positive";
             else if(label == -1)
-                tmp = "差评";
+                tmp = "negative";
             else 
-                tmp = "不予评价";
+                tmp = "comments refused";
             if(score > 0.5)
                 s = score;
             else
                 s = 1 - score;
-            ss << "情感大师分析：" << tmp << " 可信度：" << s;
+            ss << "{\"emotion\":\"" << tmp << "\",\"confidence\":\"" << s << "\"}";
             std::string res(ss.str());
             ss.str("");
             mg_send_data(conn,res.c_str(),res.size());
