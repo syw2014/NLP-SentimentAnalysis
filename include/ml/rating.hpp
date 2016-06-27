@@ -91,9 +91,9 @@ class Rating
                 return;
             }
             
-            uint32_t max_size = 64; // default memory size of pSample
-            uint32_t i, j=0;
-            for(i = 0; i < element.size(); ++i){
+            int32_t max_size = 64; // default memory size of pSample
+            int32_t i, j=0;
+            for(i = 0; (uint32_t)i < element.size(); ++i){
                 if(element[i] == 0)
                     continue;
                // Realloc memory for pSample
@@ -144,7 +144,7 @@ class Rating
             double label = pPredict_->PredictWithProbability(pSample, prob_estimiates);
             std::cout << "[INFO] Predict Result: \"label\": " << label 
                 << "\" prob\":";
-            for(uint32_t i = 0; i < nr_class_; ++i)
+            for(int32_t i = 0; i < nr_class_; ++i)
                 std::cout <<" "<<std::setprecision(6) << prob_estimiates[i];
             std::cout << std::endl;
             predict_prob = prob_estimiates[0];

@@ -155,8 +155,8 @@ class Predict
                     continue;
                 }
                 // parse every index:value pair and store in sample x
-                uint32_t j=0,i=0; // j is loop control variable, i is the index of 'x'
-                for(j=1; j < vec.size(); ++j){
+                int32_t j=0,i=0; // j is loop control variable, i is the index of 'x'
+                for(j=1; (uint32_t)j < vec.size(); ++j){
                     if(i >= max_nr_attr - 2){ // need one more for index = -1
                         max_nr_attr *= 2;
                         x = (struct feature_node*) realloc(x, max_nr_attr*sizeof(struct feature_node));

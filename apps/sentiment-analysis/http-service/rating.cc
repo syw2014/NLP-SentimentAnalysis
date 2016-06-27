@@ -86,7 +86,7 @@ static int ev_handler(struct mg_connection *conn, enum mg_event ev){
                 s = score;
             else
                 s = 1 - score;
-            ss << "{\"emotion\":\"" << tmp << "\",\"confidence\":\"" << s << "\"}";
+            ss << "{\"emotion\":\"" << tmp << "\",\"confidence\":" << s << "}";
             std::string res(ss.str());
             ss.str("");
             mg_send_data(conn,res.c_str(),res.size());
