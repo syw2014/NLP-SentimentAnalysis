@@ -22,4 +22,20 @@ model in E-commerce.
     - jsoncpp, to parse json data
     - boost, filesystem, normal functions, unordered_map, string algorithms,etc
 ## 4.Evalution
-## 5.Future Works
+## 5.TODO Lists
+    - Model Train:
+        1> Design sample scale module to make sure the sample is available for linear or svm training.
+        2> Integrate training module.
+        3> Add parameter setting module, like SVM/Logistic Regression and parameters selection,
+           and this module should be flexiable as far as possible, need more test on different
+           samples.
+
+    - Predict with trained model:
+        1> Add parameter setting module, in current the model use the default settings.
+        2> Design other probability computation model.
+
+    - System:
+        1> Optimizate the whole system remove some unnecessary process.
+
+    - Further Works:
+        1> Use models on multi-classification.
